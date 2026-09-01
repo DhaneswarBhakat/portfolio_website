@@ -1,30 +1,29 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Smoke test: the portfolio app boots and renders its identity + nav.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
-import 'package:portfolio_website/main.dart';
+import 'package:portfolio_website/app.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('renders role and section nav', (tester) async {
+    // Fire visibility callbacks synchronously so no timer outlives the test.
+    VisibilityDetectorController.instance.updateInterval = Duration.zero;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    tester.view.physicalSize = const Size(1440, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpWidget(const PortfolioApp());
+    await tester.pump(const Duration(milliseconds: 300));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Mobile Application Developer'), findsWidgets);
+    expect(find.text('About'), findsOneWidget);
+    expect(find.text('Contact'), findsOneWidget);
+
+    // Tear down the tree so repeating ring animations don't leak a ticker.
+    await tester.pumpWidget(const SizedBox());
   });
 }

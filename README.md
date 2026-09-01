@@ -1,16 +1,39 @@
-# portfolio_website
+# Portfolio Website
 
-A new Flutter project.
+Personal portfolio site for **Dhaneswar Bhakat — Mobile Application Developer**, built
+with Flutter (web-first, but the app builds on every Flutter platform).
 
-## Getting Started
+The UI follows the "Kinetic Logic" design system from the Google Stitch project
+*Dhaneswar Bhakat Mobile Portfolio*: dark "deep space" palette, electric-blue accent,
+glassmorphism cards, dot-grid texture, Inter + JetBrains Mono.
 
-This project is a starting point for a Flutter application.
+## Run
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter pub get
+flutter run -d chrome        # or: flutter build web
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Structure
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Path | Purpose |
+|---|---|
+| `lib/theme/` | Colours, type scale, spacing, `ThemeData` |
+| `lib/core/` | `app_links.dart` (contact links), `launcher.dart` (url_launcher wrapper), `responsive.dart` |
+| `lib/data/portfolio_data.dart` | **All site copy** — edit here to change content |
+| `lib/models/models.dart` | `Project`, `SkillGroup`, `TimelineEntry`, `Stat` |
+| `lib/widgets/` | Shared UI: `GlassCard`, `TechChip`, `ProjectCard`, `RevealOnScroll`, buttons, dot grid |
+| `lib/sections/` | One file per page section (nav, hero, about, skills, projects, experience, contact, footer) |
+| `lib/pages/home_page.dart` | Single scrolling page: section keys, nav scroll, active-section tracking |
+
+## TODO — fill these in
+
+Set the placeholders in [`lib/core/app_links.dart`](lib/core/app_links.dart):
+
+- `resumeUrl` — public URL for the résumé PDF (`DRUpdated.pdf`). Until set, the
+  "Download Résumé" button shows a "coming soon" snackbar.
+- `githubUrl` — GitHub profile URL.
+- `linkedinUrl` — LinkedIn profile URL.
+
+The hero avatar is a styled "DB" placeholder (no photo). Drop a real headshot into
+`assets/images/` and swap it into `lib/sections/hero_section.dart` (`_HeroAvatar`) when ready.
