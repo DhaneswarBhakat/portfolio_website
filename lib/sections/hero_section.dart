@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../core/app_links.dart';
@@ -164,28 +166,22 @@ class _HeroAvatarState extends State<_HeroAvatar>
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // Outer ring: a bright arc + node sweeps around as it rotates.
           RotationTransition(
             turns: _outer,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                ),
-              ),
+            child: CustomPaint(
+              size: Size.square(size),
+              painter: _SweepRingPainter(),
             ),
           ),
-          RotationTransition(
-            turns: Tween<double>(begin: 1, end: 0).animate(_inner),
-            child: Container(
-              margin: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.outlineVariant,
-                  style: BorderStyle.solid,
-                  width: 1,
-                ),
+          // Inner ring: dashed, counter-rotating.
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: RotationTransition(
+              turns: Tween<double>(begin: 1, end: 0).animate(_inner),
+              child: CustomPaint(
+                size: Size.square(size - 36),
+                painter: _DashedRingPainter(),
               ),
             ),
           ),
@@ -249,4 +245,84 @@ class _Floater extends StatelessWidget {
       child: Text(label, style: AppType.codeSm.copyWith(color: color)),
     );
   }
+}
+
+/// Thin circle stroke with a sweep-gradient arc and a glowing node, so rotation
+/// reads as motion (a plain circle looks identical at every angle).
+class _SweepRingPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final center = rect.center;
+    final radius = size.width / 2 - 1;
+
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = AppColors.primary.withValues(alpha: 0.12),
+    );
+
+    final sweep = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..shader = SweepGradient(
+        colors: [
+          AppColors.primary.withValues(alpha: 0),
+          AppColors.primary.withValues(alpha: 0.9),
+        ],
+        stops: const [0.0, 1.0],
+        startAngle: 0,
+        endAngle: math.pi * 0.8,
+      ).createShader(rect);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      math.pi * 0.8,
+      false,
+      sweep,
+    );
+
+    // Glowing node at the leading end of the arc (top of the unrotated ring).
+    final node = Offset(center.dx, center.dy - radius);
+    canvas.drawCircle(
+      node,
+      3.5,
+      Paint()
+        ..color = AppColors.primary
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
+    canvas.drawCircle(node, 2.5, Paint()..color = AppColors.primary);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Dashed circle stroke — the dashes make the counter-rotation visible.
+class _DashedRingPainter extends CustomPainter {
+  static const int _dashes = 44;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = (Offset.zero & size).center;
+    final radius = size.width / 2 - 1;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..color = AppColors.outlineVariant;
+
+    final step = (2 * math.pi) / _dashes;
+    final dash = step * 0.5;
+    final oval = Rect.fromCircle(center: center, radius: radius);
+    for (var i = 0; i < _dashes; i++) {
+      canvas.drawArc(oval, i * step, dash, false, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

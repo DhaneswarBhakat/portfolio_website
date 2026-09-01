@@ -44,6 +44,10 @@ class SectionHeader extends StatelessWidget {
       ),
     );
 
+    // On phones the divider rule steals width and forces the heading to wrap
+    // mid-word — drop it and let the title span the column.
+    if (context.isMobile) return title;
+
     return Row(
       children: [
         if (ruleLeading) ...[rule, const SizedBox(width: 16)],

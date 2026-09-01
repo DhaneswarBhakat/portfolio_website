@@ -89,7 +89,9 @@ class _ContactDetails extends StatelessWidget {
         _ContactRow(
           icon: Icons.code,
           label: 'GITHUB',
-          value: AppLinks.hasGithub ? AppLinks.githubUrl : 'Add link soon',
+          value: AppLinks.hasGithub
+              ? AppLinks.pretty(AppLinks.githubUrl)
+              : 'Add link soon',
           muted: !AppLinks.hasGithub,
           onTap: () => Launcher.open(
             context,
@@ -101,7 +103,9 @@ class _ContactDetails extends StatelessWidget {
         _ContactRow(
           icon: Icons.group_outlined,
           label: 'LINKEDIN',
-          value: AppLinks.hasLinkedin ? AppLinks.linkedinUrl : 'Add link soon',
+          value: AppLinks.hasLinkedin
+              ? AppLinks.pretty(AppLinks.linkedinUrl)
+              : 'Add link soon',
           muted: !AppLinks.hasLinkedin,
           onTap: () => Launcher.open(
             context,

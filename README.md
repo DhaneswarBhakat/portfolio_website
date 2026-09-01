@@ -26,14 +26,12 @@ flutter run -d chrome        # or: flutter build web
 | `lib/sections/` | One file per page section (nav, hero, about, skills, projects, experience, contact, footer) |
 | `lib/pages/home_page.dart` | Single scrolling page: section keys, nav scroll, active-section tracking |
 
-## TODO — fill these in
+## Links
 
-Set the placeholders in [`lib/core/app_links.dart`](lib/core/app_links.dart):
+Email, phone, résumé (Google Drive), GitHub and LinkedIn are all set in
+[`lib/core/app_links.dart`](lib/core/app_links.dart).
 
-- `resumeUrl` — public URL for the résumé PDF (`DRUpdated.pdf`). Until set, the
-  "Download Résumé" button shows a "coming soon" snackbar.
-- `githubUrl` — GitHub profile URL.
-- `linkedinUrl` — LinkedIn profile URL.
+## Still to do
 
 The hero avatar is a styled "DB" placeholder (no photo). Drop a real headshot into
 `assets/images/` and swap it into `lib/sections/hero_section.dart` (`_HeroAvatar`) when ready.

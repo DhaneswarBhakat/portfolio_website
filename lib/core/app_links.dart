@@ -6,17 +6,21 @@ abstract final class AppLinks {
   /// Real — used for the optional phone row (tel:).
   static const String phone = '+918863948549';
 
-  // TODO: host the résumé PDF (DRUpdated.pdf) somewhere public (Google Drive
-  // share link, personal domain, GitHub release asset, …) and paste the URL here.
-  static const String resumeUrl = '';
+  /// Résumé PDF (Google Drive). `export=download` streams the file straight
+  /// down; swap in the `/view?usp=sharing` link instead to open the Drive preview.
+  static const String resumeUrl =
+      'https://drive.google.com/uc?export=download&id=1e0KD8XD8rZQZBXJEbInBOH9dpPICrQs8';
 
-  // TODO: add the GitHub profile URL, e.g. 'https://github.com/<username>'.
-  static const String githubUrl = '';
+  static const String githubUrl = 'https://github.com/DhaneswarBhakat';
 
-  // TODO: add the LinkedIn profile URL, e.g. 'https://linkedin.com/in/<handle>'.
-  static const String linkedinUrl = '';
+  static const String linkedinUrl =
+      'https://www.linkedin.com/in/dhaneswarbhakat/';
 
   static bool get hasResume => resumeUrl.isNotEmpty;
   static bool get hasGithub => githubUrl.isNotEmpty;
   static bool get hasLinkedin => linkedinUrl.isNotEmpty;
+
+  /// Scheme-stripped, de-trailing-slashed form for display in the UI.
+  static String pretty(String url) =>
+      url.replaceFirst(RegExp(r'^https?://(www\.)?'), '').replaceFirst(RegExp(r'/$'), '');
 }
