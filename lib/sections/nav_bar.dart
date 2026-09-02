@@ -24,25 +24,14 @@ const navItems = [
   NavItem('Contact', 'contact'),
 ];
 
-/// Fixed, glass-blurred top bar. Desktop shows inline links + "Hire Me";
-/// narrow layouts collapse to a toggle that expands a dropdown panel.
-class NavBar extends StatefulWidget {
+/// Fixed, glass-blurred top bar. Desktop shows inline links + "Hire Me".
+/// Phones show a minimal brand + monogram bar; navigation there lives in the
+/// [MobileBottomNav].
+class NavBar extends StatelessWidget {
   const NavBar({super.key, required this.onNavigate, required this.activeId});
 
   final void Function(String id) onNavigate;
   final String? activeId;
-
-  @override
-  State<NavBar> createState() => _NavBarState();
-}
-
-class _NavBarState extends State<NavBar> {
-  bool _menuOpen = false;
-
-  void _go(String id) {
-    setState(() => _menuOpen = false);
-    widget.onNavigate(id);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,59 +47,35 @@ class _NavBarState extends State<NavBar> {
               bottom: BorderSide(color: AppColors.cardBorder),
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: AppSpacing.navHeight,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxWidth: AppSpacing.containerMax),
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: context.pagePadding),
-                      child: Row(
-                        children: [
-                          _Brand(onTap: () => _go('top')),
-                          const Spacer(),
-                          if (!compact) ...[
-                            for (final item in navItems)
-                              _NavLink(
-                                item: item,
-                                active: widget.activeId == item.id,
-                                onTap: () => _go(item.id),
-                              ),
-                            const SizedBox(width: 12),
-                            _HireMe(),
-                          ] else
-                            IconButton(
-                              onPressed: () =>
-                                  setState(() => _menuOpen = !_menuOpen),
-                              icon: Icon(
-                                _menuOpen ? Icons.close : Icons.menu,
-                                color: AppColors.onSurface,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+          child: SizedBox(
+            height: AppSpacing.navHeight,
+            child: Center(
+              child: ConstrainedBox(
+                constraints:
+                    const BoxConstraints(maxWidth: AppSpacing.containerMax),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: context.pagePadding),
+                  child: Row(
+                    children: [
+                      _Brand(onTap: () => onNavigate('top')),
+                      const Spacer(),
+                      if (!compact) ...[
+                        for (final item in navItems)
+                          _NavLink(
+                            item: item,
+                            active: activeId == item.id,
+                            onTap: () => onNavigate(item.id),
+                          ),
+                        const SizedBox(width: 12),
+                        _HireMe(),
+                      ] else
+                        const _Monogram(),
+                    ],
                   ),
                 ),
               ),
-              if (compact)
-                AnimatedCrossFade(
-                  duration: const Duration(milliseconds: 200),
-                  crossFadeState: _menuOpen
-                      ? CrossFadeState.showFirst
-                      : CrossFadeState.showSecond,
-                  firstChild: _MobileMenu(
-                    activeId: widget.activeId,
-                    onTap: _go,
-                  ),
-                  secondChild: const SizedBox(width: double.infinity),
-                ),
-            ],
+            ),
           ),
         ),
       ),
@@ -145,6 +110,32 @@ class _Brand extends StatelessWidget {
               style: AppType.headlineMd.copyWith(fontSize: 18),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Small "DB" monogram bubble shown at the right of the mobile header.
+class _Monogram extends StatelessWidget {
+  const _Monogram();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.surfaceContainerHigh,
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+      ),
+      child: Text(
+        'DB',
+        style: AppType.labelCaps.copyWith(
+          color: AppColors.primary,
+          fontSize: 12,
         ),
       ),
     );
@@ -210,47 +201,6 @@ class _HireMe extends StatelessWidget {
             style: AppType.labelCaps.copyWith(color: AppColors.primary),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _MobileMenu extends StatelessWidget {
-  const _MobileMenu({required this.activeId, required this.onTap});
-  final String? activeId;
-  final void Function(String id) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-        context.pagePadding,
-        8,
-        context.pagePadding,
-        20,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final item in navItems)
-            TextButton(
-              onPressed: () => onTap(item.id),
-              style: TextButton.styleFrom(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              child: Text(
-                item.label,
-                style: AppType.labelCaps.copyWith(
-                  color: activeId == item.id
-                      ? AppColors.primary
-                      : AppColors.onSurfaceVariant,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }

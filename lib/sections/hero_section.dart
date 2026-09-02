@@ -13,36 +13,120 @@ import '../widgets/buttons.dart';
 import '../widgets/section_shell.dart';
 
 class HeroSection extends StatelessWidget {
-  const HeroSection({super.key, required this.onViewProjects});
+  const HeroSection({
+    super.key,
+    required this.onViewProjects,
+    required this.onContact,
+  });
 
   final VoidCallback onViewProjects;
+  final VoidCallback onContact;
 
   @override
   Widget build(BuildContext context) {
-    final stacked = !context.isDesktop;
+    if (context.isMobile) {
+      return SectionShell(
+        topPadding: AppSpacing.navHeight + 56,
+        bottomPadding: context.sectionSpacing,
+        child: _MobileHero(onContact: onContact),
+      );
+    }
 
     final text = _HeroText(onViewProjects: onViewProjects);
     const avatar = _HeroAvatar();
 
     return SectionShell(
-      topPadding: AppSpacing.navHeight + (context.isMobile ? 48 : 96),
+      topPadding: AppSpacing.navHeight + 96,
       bottomPadding: context.sectionSpacing,
-      child: stacked
-          ? Column(
-              children: [
-                const Align(alignment: Alignment.center, child: avatar),
-                const SizedBox(height: 48),
-                text,
-              ],
-            )
-          : Row(
+      child: context.isDesktop
+          ? Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(flex: 7, child: text),
                 const SizedBox(width: 48),
                 const Expanded(flex: 5, child: Center(child: avatar)),
               ],
+            )
+          : Column(
+              children: [
+                const Align(alignment: Alignment.center, child: avatar),
+                const SizedBox(height: 48),
+                text,
+              ],
             ),
+    );
+  }
+}
+
+/// Tight, centred hero for phones (Stitch mobile design): monogram tile, name,
+/// `> role`, then Résumé + Contact buttons — no kicker, tagline or rings.
+class _MobileHero extends StatelessWidget {
+  const _MobileHero({required this.onContact});
+
+  final VoidCallback onContact;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 128,
+          height: 128,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            gradient: const RadialGradient(
+              colors: [
+                AppColors.surfaceContainerHigh,
+                AppColors.surfaceContainerLowest,
+              ],
+            ),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+            boxShadow: [
+              BoxShadow(color: AppColors.glow, blurRadius: 32, spreadRadius: -8),
+            ],
+          ),
+          child: Text(
+            'DB',
+            style: AppType.headlineXl().copyWith(
+              fontSize: 44,
+              fontFamily: AppType.codeSm.fontFamily,
+              color: AppColors.primary,
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          '${PortfolioData.firstName} ${PortfolioData.lastName}',
+          textAlign: TextAlign.center,
+          style: AppType.headlineLg(compact: true).copyWith(fontSize: 32),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '> ${PortfolioData.role}',
+          textAlign: TextAlign.center,
+          style: AppType.codeSm.copyWith(color: AppColors.primary),
+        ),
+        const SizedBox(height: 28),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            PrimaryButton(
+              label: 'Résumé',
+              icon: Icons.download,
+              onPressed: () => Launcher.open(
+                context,
+                AppLinks.resumeUrl,
+                comingSoonMessage: 'Résumé link coming soon',
+              ),
+            ),
+            const SizedBox(width: 14),
+            GhostButton(label: 'Contact', onPressed: onContact),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -53,7 +137,6 @@ class _HeroText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final compact = context.isMobile;
     final crossAxis =
         context.isDesktop ? CrossAxisAlignment.start : CrossAxisAlignment.center;
     final align = context.isDesktop ? TextAlign.start : TextAlign.center;
@@ -72,12 +155,12 @@ class _HeroText extends StatelessWidget {
         RichText(
           textAlign: align,
           text: TextSpan(
-            style: AppType.headlineXl(compact: compact),
+            style: AppType.headlineXl(),
             children: [
               TextSpan(text: '${PortfolioData.firstName}\n'),
               TextSpan(
                 text: '${PortfolioData.lastName}.',
-                style: AppType.headlineXl(compact: compact).copyWith(
+                style: AppType.headlineXl().copyWith(
                   foreground: Paint()
                     ..shader = const LinearGradient(
                       colors: [AppColors.primary, AppColors.primaryContainer],
@@ -210,12 +293,22 @@ class _HeroAvatarState extends State<_HeroAvatar>
             ),
           ),
           Positioned(
-            top: size * 0.12,
+            top: size * 0.10,
             left: 0,
             child: _Floater('Flutter', color: AppColors.primary),
           ),
           Positioned(
-            bottom: size * 0.16,
+            top: size * 0.10,
+            right: 0,
+            child: _Floater('React Native', color: AppColors.tertiary),
+          ),
+          Positioned(
+            bottom: size * 0.14,
+            left: 0,
+            child: _Floater('Swift', color: AppColors.primary),
+          ),
+          Positioned(
+            bottom: size * 0.14,
             right: 0,
             child: _Floater('Kotlin', color: AppColors.tertiary),
           ),

@@ -12,11 +12,17 @@ class SectionHeader extends StatelessWidget {
     required this.plain,
     required this.accent,
     this.ruleLeading = false,
+    this.mobileIcon,
+    this.mobileLabel,
   });
 
   final String plain;
   final String accent;
   final bool ruleLeading;
+
+  /// On phones the Stitch layout uses a compact `icon + short label` header.
+  final IconData? mobileIcon;
+  final String? mobileLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +50,24 @@ class SectionHeader extends StatelessWidget {
       ),
     );
 
-    // On phones the divider rule steals width and forces the heading to wrap
-    // mid-word — drop it and let the title span the column.
-    if (context.isMobile) return title;
+    // Phones: compact icon + label header per the Stitch mobile design.
+    if (context.isMobile) {
+      if (mobileIcon == null && mobileLabel == null) return title;
+      return Row(
+        children: [
+          if (mobileIcon != null) ...[
+            Icon(mobileIcon, color: AppColors.primary, size: 22),
+            const SizedBox(width: 10),
+          ],
+          Flexible(
+            child: Text(
+              mobileLabel ?? '$plain $accent',
+              style: AppType.headlineMd,
+            ),
+          ),
+        ],
+      );
+    }
 
     return Row(
       children: [

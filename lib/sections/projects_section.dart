@@ -14,6 +14,7 @@ class ProjectsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mobile = context.isMobile;
     return SectionShell(
       background: AppColors.surfaceContainerLow,
       child: Column(
@@ -23,28 +24,31 @@ class ProjectsSection extends StatelessWidget {
             plain: 'Featured',
             accent: 'Projects',
             ruleLeading: true,
+            mobileIcon: Icons.widgets_outlined,
+            mobileLabel: 'Builds',
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: mobile ? 20 : 40),
           _Grid(
             columns: context.responsive(mobile: 1, desktop: 2),
             children: [
-              for (final p in PortfolioData.featuredProjects) ProjectCard(project: p),
+              for (final p in PortfolioData.featuredProjects)
+                ProjectCard(project: p, banner: mobile),
             ],
           ),
           SizedBox(height: context.sectionSpacing * 0.6),
-          _LabsHeader(),
+          const _LabsHeader(),
           const SizedBox(height: 8),
           Text(
             'Side projects and experiments built to try out an idea, an API or a design.',
             style: AppType.bodyMd,
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: mobile ? 20 : 32),
           _Grid(
             columns: context.responsive(mobile: 1, tablet: 2, desktop: 3),
             gap: 20,
             children: [
               for (final p in PortfolioData.personalProjects)
-                ProjectCard(project: p, compact: true),
+                ProjectCard(project: p, compact: true, banner: mobile),
             ],
           ),
         ],
@@ -54,16 +58,26 @@ class ProjectsSection extends StatelessWidget {
 }
 
 class _LabsHeader extends StatelessWidget {
+  const _LabsHeader();
+
   @override
   Widget build(BuildContext context) {
+    if (context.isMobile) {
+      return const SectionHeader(
+        plain: 'Labs &',
+        accent: 'Experiments',
+        mobileIcon: Icons.science_outlined,
+        mobileLabel: 'Labs & Experiments',
+      );
+    }
     return RichText(
       text: TextSpan(
-        style: AppType.headlineLg(compact: context.isMobile),
+        style: AppType.headlineLg(),
         children: [
           const TextSpan(text: 'Labs & '),
           TextSpan(
             text: 'Experiments',
-            style: AppType.headlineLg(compact: context.isMobile).copyWith(
+            style: AppType.headlineLg().copyWith(
               color: AppColors.primary,
               fontStyle: FontStyle.italic,
             ),

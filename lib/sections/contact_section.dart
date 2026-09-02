@@ -16,6 +16,20 @@ class ContactSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (context.isMobile) {
+      return SectionShell(
+        background: AppColors.surfaceContainerLow,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: const [
+            _ContactForm(mobile: true),
+            SizedBox(height: 24),
+            _MobileLinks(),
+          ],
+        ),
+      );
+    }
+
     final row = context.isDesktop;
     const left = _ContactDetails();
     const right = _ContactForm();
@@ -35,6 +49,54 @@ class ContactSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [left, const SizedBox(height: 40), right],
             ),
+    );
+  }
+}
+
+/// Compact icon links shown under the contact card on phones.
+class _MobileLinks extends StatelessWidget {
+  const _MobileLinks();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget chip(IconData icon, String label, VoidCallback onTap) => InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 16, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Text(label,
+                    style: AppType.labelCaps
+                        .copyWith(color: AppColors.onSurfaceVariant)),
+              ],
+            ),
+          ),
+        );
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      alignment: WrapAlignment.center,
+      children: [
+        chip(Icons.mail_outline, 'Email',
+            () => Launcher.email(context, AppLinks.email)),
+        chip(Icons.call_outlined, 'Phone',
+            () => Launcher.phone(context, AppLinks.phone)),
+        chip(Icons.code, 'GitHub',
+            () => Launcher.open(context, AppLinks.githubUrl,
+                comingSoonMessage: 'GitHub link coming soon')),
+        chip(Icons.group_outlined, 'LinkedIn',
+            () => Launcher.open(context, AppLinks.linkedinUrl,
+                comingSoonMessage: 'LinkedIn link coming soon')),
+      ],
     );
   }
 }
@@ -177,7 +239,9 @@ class _ContactRow extends StatelessWidget {
 }
 
 class _ContactForm extends StatefulWidget {
-  const _ContactForm();
+  const _ContactForm({this.mobile = false});
+
+  final bool mobile;
 
   @override
   State<_ContactForm> createState() => _ContactFormState();
@@ -211,28 +275,48 @@ class _ContactFormState extends State<_ContactForm> {
 
   @override
   Widget build(BuildContext context) {
+    final mobile = widget.mobile;
     return GlassCard(
       interactive: false,
-      padding: EdgeInsets.all(context.isMobile ? 24 : 36),
+      padding: EdgeInsets.all(mobile ? 24 : 36),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (mobile) ...[
+            const Icon(Icons.mark_email_read_outlined,
+                color: AppColors.primary, size: 30),
+            const SizedBox(height: 10),
+            Text(
+              'Get in Touch',
+              textAlign: TextAlign.center,
+              style: AppType.headlineMd,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "Let's build something exceptional together.",
+              textAlign: TextAlign.center,
+              style: AppType.bodyMd,
+            ),
+            const SizedBox(height: 24),
+          ],
           _Field(label: 'Name', controller: _name, hint: 'Jane Doe'),
           const SizedBox(height: 20),
-          _Field(
-            label: 'Email',
-            controller: _email,
-            hint: 'jane@example.com',
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 20),
+          if (!mobile) ...[
+            _Field(
+              label: 'Email',
+              controller: _email,
+              hint: 'jane@example.com',
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 20),
+          ],
           _Field(
             label: 'Message',
             controller: _message,
             hint: 'How can we work together?',
-            maxLines: 5,
+            maxLines: mobile ? 4 : 5,
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
           PrimaryButton(
             label: 'Send Message',
             icon: Icons.send,
@@ -241,6 +325,7 @@ class _ContactFormState extends State<_ContactForm> {
           const SizedBox(height: 12),
           Text(
             'Opens your mail app addressed to ${AppLinks.email}.',
+            textAlign: mobile ? TextAlign.center : TextAlign.start,
             style: AppType.codeSm.copyWith(color: AppColors.outline),
           ),
         ],

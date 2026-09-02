@@ -18,8 +18,13 @@ class ExperienceSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionHeader(plain: 'Professional', accent: 'Journey'),
-          const SizedBox(height: 48),
+          const SectionHeader(
+            plain: 'Professional',
+            accent: 'Journey',
+            mobileIcon: Icons.history,
+            mobileLabel: 'Experience',
+          ),
+          SizedBox(height: context.isMobile ? 24 : 48),
           for (var i = 0; i < entries.length; i++)
             _TimelineRow(
               entry: entries[i],

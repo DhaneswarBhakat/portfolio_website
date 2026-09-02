@@ -15,6 +15,8 @@ class SkillsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (context.isMobile) return const _MobileSkills();
+
     final columns = context.responsive<int>(mobile: 1, tablet: 2, desktop: 3);
 
     return SectionShell(
@@ -43,6 +45,58 @@ class SkillsSection extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Phones: one flat "Tech Stack" chip cloud instead of grouped cards.
+class _MobileSkills extends StatelessWidget {
+  const _MobileSkills();
+
+  @override
+  Widget build(BuildContext context) {
+    final seen = <String>{};
+    final skills = <String>[
+      for (final g in PortfolioData.skillGroups)
+        for (final s in g.skills)
+          if (seen.add(s)) s,
+    ];
+
+    return SectionShell(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader(
+            plain: 'Technical',
+            accent: 'Arsenal',
+            mobileIcon: Icons.terminal,
+            mobileLabel: 'Tech Stack',
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [for (final s in skills) _StackChip(s)],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StackChip extends StatelessWidget {
+  const _StackChip(this.label);
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(label, style: AppType.codeSm.copyWith(color: AppColors.onSurface)),
     );
   }
 }

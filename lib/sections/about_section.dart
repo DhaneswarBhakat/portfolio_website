@@ -31,20 +31,32 @@ class AboutSection extends StatelessWidget {
       ),
     );
 
+    final mobile = context.isMobile;
     final card = GlassCard(
       interactive: false,
-      padding: EdgeInsets.all(context.isMobile ? 24 : 40),
+      padding: EdgeInsets.all(mobile ? 24 : 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (mobile) ...[
+            Row(
+              children: [
+                const Icon(Icons.person_outline,
+                    color: AppColors.primary, size: 22),
+                const SizedBox(width: 10),
+                Text('About', style: AppType.headlineMd),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
           for (final p in PortfolioData.aboutParagraphs) ...[
-            Text(p, style: AppType.bodyLg),
+            Text(p, style: mobile ? AppType.bodyMd : AppType.bodyLg),
             if (p != PortfolioData.aboutParagraphs.last)
               const SizedBox(height: 20),
           ],
-          const SizedBox(height: 40),
+          SizedBox(height: mobile ? 28 : 40),
           const Divider(color: AppColors.outlineVariant, height: 1),
-          const SizedBox(height: 32),
+          SizedBox(height: mobile ? 24 : 32),
           _StatGrid(stats: PortfolioData.stats),
         ],
       ),
@@ -61,10 +73,7 @@ class AboutSection extends StatelessWidget {
                 Expanded(flex: 3, child: card),
               ],
             )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [headingRich, const SizedBox(height: 28), card],
-            ),
+          : card,
     );
   }
 }

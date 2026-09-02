@@ -14,6 +14,25 @@ flutter pub get
 flutter run -d chrome        # or: flutter build web
 ```
 
+## Deploy (GitHub Pages)
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds the web app and
+publishes it on every push to `main`. One-time setup:
+
+1. **GitHub → repo Settings → Pages → Build and deployment → Source: “GitHub Actions”.**
+2. Push to `main`. The **Deploy to GitHub Pages** action builds and publishes.
+3. Site goes live at `https://dhaneswarbhakat.github.io/portfolio_website/`.
+
+The build passes `--base-href "/portfolio_website/"` because it is served from a
+repo sub-path. For a user site (`dhaneswarbhakat.github.io` repo) or a custom
+domain, change that to `"/"` in the workflow (and add a `CNAME` for a domain).
+
+Build locally the same way:
+
+```bash
+flutter build web --release --base-href "/portfolio_website/"
+```
+
 ## Structure
 
 | Path | Purpose |

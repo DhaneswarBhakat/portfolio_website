@@ -5,9 +5,11 @@ import '../sections/contact_section.dart';
 import '../sections/experience_section.dart';
 import '../sections/footer_section.dart';
 import '../sections/hero_section.dart';
+import '../sections/mobile_bottom_nav.dart';
 import '../sections/nav_bar.dart';
 import '../sections/projects_section.dart';
 import '../sections/skills_section.dart';
+import '../core/responsive.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/dot_grid_background.dart';
 import '../widgets/reveal_on_scroll.dart';
@@ -87,6 +89,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = context.isMobile;
     return Scaffold(
       body: Stack(
         children: [
@@ -102,6 +105,7 @@ class _HomePageState extends State<HomePage> {
                       key: _sectionKeys['top'],
                       child: HeroSection(
                         onViewProjects: () => _navigateTo('projects'),
+                        onContact: () => _navigateTo('contact'),
                       ),
                     ),
                     _Reveal(
@@ -129,7 +133,10 @@ class _HomePageState extends State<HomePage> {
                       keyRef: _sectionKeys['contact']!,
                       child: const ContactSection(),
                     ),
-                    const FooterSection(),
+                    if (!isMobile)
+                      const FooterSection()
+                    else
+                      const SizedBox(height: 96),
                   ],
                 ),
               ),
@@ -141,6 +148,16 @@ class _HomePageState extends State<HomePage> {
             right: 0,
             child: NavBar(onNavigate: _navigateTo, activeId: _activeId),
           ),
+          if (isMobile)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: MobileBottomNav(
+                onNavigate: _navigateTo,
+                activeId: _activeId,
+              ),
+            ),
         ],
       ),
     );

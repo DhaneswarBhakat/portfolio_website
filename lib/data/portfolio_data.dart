@@ -52,6 +52,24 @@ abstract final class PortfolioData {
       ],
     ),
     SkillGroup(
+      title: 'iOS / Apple',
+      icon: Icons.apple,
+      skills: [
+        'Swift',
+        'SwiftUI',
+        'Combine',
+        'Swift Concurrency (async/await)',
+        'Core Data',
+        'XCTest',
+        'Swift Package Manager',
+        'Xcode & Instruments',
+        'TestFlight',
+        'App Store Connect',
+        'CocoaPods',
+        'Fastlane',
+      ],
+    ),
+    SkillGroup(
       title: 'Architecture & State',
       icon: Icons.architecture,
       skills: [
@@ -131,7 +149,6 @@ abstract final class PortfolioData {
         'Git & GitHub',
         'Android Studio',
         'VS Code',
-        'Xcode',
         'Gradle',
         'Postman',
         'Azure DevOps',
